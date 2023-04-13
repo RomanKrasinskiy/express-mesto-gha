@@ -27,7 +27,7 @@ module.exports.createUser = (req, res) => {
 };
 
 module.exports.getUser = (req, res) => {
-  User.findById(req.params._id)
+  User.findById(req.params.id)
     .then((user) => {
       if (!user) {
         return res.status(NOT_FOUND).send({ message: 'Пользователь c таким id не найден.' });
@@ -46,7 +46,7 @@ module.exports.updateUser = (req, res) => {
   User.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError || mongoose.Error.ValidationError) {
+      if (err instanceof (mongoose.Error.CastError) || (mongoose.Error.ValidationError)) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
       }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
@@ -57,7 +57,7 @@ module.exports.updateUser = (req, res) => {
 };
 
 module.exports.updateAvatar = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.user._id, req.body.avatar, { new: true, runValidators: true })
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError || mongoose.Error.ValidationError) {
