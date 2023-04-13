@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
-const validate = require("mongoose-validator");
-const URLvalidator = validate({ validator: "isURL" });
+const mongoose = require('mongoose');
+const validate = require('mongoose-validator');
+
+const URLvalidator = validate({ validator: 'isURL' });
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -22,4 +23,4 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("user", userSchema);
+module.exports = mongoose.model('user', userSchema);

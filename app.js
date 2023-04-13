@@ -1,9 +1,10 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const userRouter = require('./routes/users')
-const cardRouter = require('./routes/cards')
 const mongoose = require('mongoose');
 const path = require('path');
+const bodyParser = require('body-parser');
+const userRouter = require('./routes/users');
+const cardRouter = require('./routes/cards');
+
 const { PORT = 3000, MONGODB_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
 mongoose.connect(MONGODB_URL, { useNewUrlParser: true });
