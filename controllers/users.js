@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
+const { OK, CREATED } = require('../answersServer/success');
 const {
-  OK,
   BAD_REQUEST,
   NOT_FOUND,
   INTERNAL_SERVER,
-} = require('../errors/errors');
+} = require('../answersServer/errors');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -17,9 +17,9 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.status(OK).send(user))
+    .then((user) => res.status(CREATED).send(user))
     .catch((err) => {
-      if (err instanceof (mongoose.Error.CastError) || (mongoose.Error.ValidationError)) {
+      if (err instanceof (mongoose.Error.CastError)) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании пользователя.' });
       }
       return res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' });
@@ -35,7 +35,7 @@ module.exports.getUser = (req, res) => {
       return res.status(OK).send(user);
     })
     .catch((err) => {
-      if (err instanceof (mongoose.Error.CastError) || (mongoose.Error.ValidationError)) {
+      if (err instanceof (mongoose.Error.CastError)) {
         return res.status(BAD_REQUEST).send({ message: 'Пользователь по указанному _id не найден.' });
       }
       return res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' });
@@ -43,10 +43,11 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.updateUser = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
+  const { name, about } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true }).orFail()
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err instanceof (mongoose.Error.CastError) || (mongoose.Error.ValidationError)) {
+      if (err instanceof (mongoose.Error.CastError)) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
       }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
@@ -59,10 +60,10 @@ module.exports.updateUser = (req, res) => {
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true }).orFail()
     .then((user) => res.status(OK).send(user))
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError || mongoose.Error.ValidationError) {
+      if (err instanceof (mongoose.Error.CastError)) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
       }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
