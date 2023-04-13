@@ -28,7 +28,12 @@ module.exports.createUser = (req, res) => {
 
 module.exports.getUser = (req, res) => {
   User.findById(req.user._id)
-    .then((user) => res.status(OK).send(user))
+    .then((user) => {
+      if (!user) {
+        return res.status(NOT_FOUND).send({ message: 'Пользователь c таким id не найден.' });
+      }
+      return res.status(OK).send(user);
+    })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError || mongoose.Error.ValidationError) {
         return res.status(BAD_REQUEST).send({ message: 'Пользователь по указанному _id не найден.' });
