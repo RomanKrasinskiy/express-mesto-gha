@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
-// const User = require('../models/user');
 
 const { OK, CREATED } = require('../answersServer/success');
 const {
@@ -21,7 +20,7 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
-      if (err instanceof (mongoose.Error.CastError)) {
+      if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки.' });
       }
       return res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' });
@@ -37,7 +36,7 @@ module.exports.deleteCard = (req, res) => {
       return res.status(OK).send(card);
     })
     .catch((err) => {
-      if (err instanceof (mongoose.Error.CastError)) {
+      if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные.' });
       }
       return res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' });
@@ -59,10 +58,10 @@ module.exports.likeCard = (req, res) => {
       return res.status(OK).send(card);
     })
     .catch((err) => {
-      if (err instanceof (mongoose.Error.CastError)) {
+      if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       }
-      if (err instanceof (mongoose.Error.DocumentNotFoundError)) {
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return res.status(NOT_FOUND).send({ message: 'Карточка с данным id не найдена.' });
       }
       return res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' });
@@ -84,7 +83,7 @@ module.exports.dislikeCard = (req, res) => {
       return res.status(OK).send(card);
     })
     .catch((err) => {
-      if (err instanceof (mongoose.Error.CastError)) {
+      if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для снятия лайка.' });
       }
       if (err instanceof (mongoose.Error.DocumentNotFoundError)) {
