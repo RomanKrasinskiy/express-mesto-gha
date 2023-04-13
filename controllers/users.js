@@ -36,7 +36,7 @@ module.exports.getUser = (req, res) => {
       return res.status(OK).send(user);
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
+      if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST).send({ message: 'Пользователь по указанному _id не найден.' });
       }
       return res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' });

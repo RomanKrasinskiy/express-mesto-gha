@@ -36,7 +36,7 @@ module.exports.deleteCard = (req, res) => {
       return res.status(OK).send(card);
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
+      if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные.' });
       }
       return res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' });
@@ -58,7 +58,7 @@ module.exports.likeCard = (req, res) => {
       return res.status(OK).send(card);
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
+      if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
@@ -83,7 +83,7 @@ module.exports.dislikeCard = (req, res) => {
       return res.status(OK).send(card);
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
+      if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для снятия лайка.' });
       }
       if (err instanceof (mongoose.Error.DocumentNotFoundError)) {
