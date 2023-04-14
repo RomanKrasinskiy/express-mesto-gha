@@ -10,7 +10,7 @@ const {
 
 module.exports.getCards = (req, res) => {
   Card.find({})
-    .populate('owner')
+    .populate(['owner', 'likes'])
     .then((card) => res.status(OK).send(card))
     .catch(() => res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' }));
 };
@@ -51,12 +51,7 @@ module.exports.likeCard = (req, res) => {
   )
     .orFail()
     .populate('likes')
-    .then((card) => {
-      if (!card) {
-        return res.status(NOT_FOUND).send({ message: 'Карточка с таким таким id не найдена.' });
-      }
-      return res.status(OK).send(card);
-    })
+    .then((card) => res.status(OK).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки лайка.' });
@@ -76,12 +71,7 @@ module.exports.dislikeCard = (req, res) => {
   )
     .orFail()
     .populate('owner')
-    .then((card) => {
-      if (!card) {
-        return res.status(NOT_FOUND).send({ message: 'Карточка с таким таким id не найдена.' });
-      }
-      return res.status(OK).send(card);
-    })
+    .then((card) => res.status(OK).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для снятия лайка.' });
