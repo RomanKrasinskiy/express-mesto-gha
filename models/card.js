@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const validate = require('mongoose-validator');
 
-const URLvalidator = validate({ validator: 'isURL' });
+const regAvatarURL = require('../utils/regulars');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -11,9 +10,9 @@ const cardSchema = new mongoose.Schema({
     maxlength: 30,
   },
   link: {
-    validate: URLvalidator,
     type: String,
     required: true,
+    validate: (value) => regAvatarURL.test(value),
   },
 
   owner: {
