@@ -3,7 +3,6 @@ const { UNAUTHORIZED } = require('../answersServer/errors');
 
 // eslint-disable-next-line consistent-return
 const auth = (req, res, next) => {
-  let verify;
   const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
   if (!token) {
@@ -11,15 +10,15 @@ const auth = (req, res, next) => {
       .status(UNAUTHORIZED)
       .send({ token });
   }
-  // let payload;
+  let verify;
   try {
     verify = jwt.verify(token, 'secret-key');
-    req.user = verify.payload;
   } catch (err) {
     return res
       .status(UNAUTHORIZED)
       .send({ message: 'Ошибка авторизации' });
   }
+  req.user = verify;
   next();
 };
 module.exports = { auth };
