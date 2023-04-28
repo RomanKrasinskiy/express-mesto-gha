@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { celebrate, Joi } = require('celebrate');
+const { errors, celebrate, Joi } = require('celebrate');
 const regAvatarURL = require('./utils/regulars');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
@@ -44,4 +44,5 @@ app.listen(PORT, () => {
   console.log('Сервер работает');
 });
 
+app.use(errors());
 app.use(centralizedErrorHandling);
