@@ -3,8 +3,6 @@ const validator = require('validator');
 
 // const { regAvatarURL } = require('../utils/regulars');
 
-const emailValidator = validate({ validator: 'isEmail' });
-
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -32,7 +30,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    validate: emailValidator,
+    valid: {
+      validator: validator.isEmail,
+    },
   },
   password: {
     type: String,
