@@ -6,7 +6,7 @@ const User = require('../models/user');
 const { OK, CREATED } = require('../answersServer/success');
 const {
   BAD_REQUEST,
-  UNAUTHORIZED,
+  // UNAUTHORIZED,
   NOT_FOUND,
   CONFLICT,
   INTERNAL_SERVER,
@@ -131,7 +131,7 @@ module.exports.updateAvatar = (req, res) => {
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   let userId;
   User.findOne({ email }).select('+password')
@@ -152,17 +152,15 @@ module.exports.login = (req, res) => {
         'secret-key',
         { expiresIn: 3600 * 24 * 7 },
       );
-      res.status(OK)
-        .cookie('token', token, {
+      return res
+        .cookie('jwt', token, {
           maxAge: 3600 * 24 * 365,
           httpOnly: true,
-        });
-      // аутентификация успешна
-      return res.send({ message: 'Ваш токен сохранён!' });
+        })
+        // аутентификация успешна
+        .send({ message: 'Ваш токен сохранён!' });
     })
-    .catch(() => {
-      res.status(UNAUTHORIZED).send({ message: 'Ошибка авторизации' });
-    });
+    .catch(next);
 };
 
 module.exports.getCurrentUserInfo = (req, res, next) => {
