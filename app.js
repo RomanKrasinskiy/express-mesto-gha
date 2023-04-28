@@ -39,9 +39,9 @@ app.use('/users', auth, userRouter);
 app.use('/cards', auth, cardRouter);
 app.use('*', (req, res) => res.status(NOT_FOUND).send({ message: 'По указанному url ничего нет.' }));
 
-app.use(errors());
-app.use(centralizedErrorHandling);
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log('Сервер работает');
 });
+app.use(errors());
+app.use(centralizedErrorHandling);
