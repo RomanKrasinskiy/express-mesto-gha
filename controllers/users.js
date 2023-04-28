@@ -6,19 +6,19 @@ const User = require('../models/user');
 const { OK, CREATED } = require('../answersServer/success');
 const {
   BAD_REQUEST,
-  // UNAUTHORIZED,
+  UNAUTHORIZED,
   NOT_FOUND,
   CONFLICT,
   INTERNAL_SERVER,
 } = require('../answersServer/errors');
 
-module.exports.getUsers = (req, res) => {
+const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(OK).send(users))
     .catch(() => res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' }));
 };
 
-module.exports.createUser = (req, res) => {
+const createUser = (req, res) => {
   const {
     name,
     about,
@@ -58,7 +58,7 @@ module.exports.createUser = (req, res) => {
     });
 };
 
-module.exports.getUser = (req, res) => {
+const getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
@@ -78,7 +78,7 @@ module.exports.getUser = (req, res) => {
     });
 };
 
-module.exports.updateUser = (req, res) => {
+const updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -104,7 +104,7 @@ module.exports.updateUser = (req, res) => {
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+const updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -131,7 +131,7 @@ module.exports.updateAvatar = (req, res) => {
     });
 };
 
-module.exports.login = (req, res, next) => {
+const login = (req, res) => {
   const { email, password } = req.body;
   let userId;
   User.findOne({ email }).select('+password')
@@ -157,13 +157,15 @@ module.exports.login = (req, res, next) => {
           maxAge: 3600 * 24 * 365,
           httpOnly: true,
         })
-        // аутентификация успешна
+      // аутентификация успешна
         .send({ message: 'Ваш токен сохранён!' });
     })
-    .catch(next);
+    .catch(() => {
+      res.status(UNAUTHORIZED).send({ message: 'Ошибка авторизации' });
+    });
 };
 
-module.exports.getCurrentUserInfo = (req, res, next) => {
+const getCurrentUserInfo = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)
     .then((user) => {
@@ -175,4 +177,14 @@ module.exports.getCurrentUserInfo = (req, res, next) => {
       res.status(OK).send(user);
     })
     .catch(next);
+};
+
+module.exports = {
+  getUsers,
+  createUser,
+  getUser,
+  updateUser,
+  updateAvatar,
+  login,
+  getCurrentUserInfo,
 };
