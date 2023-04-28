@@ -14,13 +14,13 @@ const auth = (req, res, next) => {
 
   let payload;
   try {
-    payload = jwt.veryfy(token, 'secret-key');
+    payload = jwt.verify(token, 'secret-key');
     req.user = payload;
-    next();
   } catch (err) {
     res
       .status(UNAUTHORIZED)
       .send({ message: 'Ошибка авторизации' });
   }
+  next();
 };
 module.exports = { auth };
