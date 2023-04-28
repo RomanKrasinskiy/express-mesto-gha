@@ -12,10 +12,10 @@ const {
   INTERNAL_SERVER,
 } = require('../answersServer/errors');
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(OK).send(users))
-    .catch(() => res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' }));
+    .catch(next);
 };
 
 const createUser = (req, res) => {
