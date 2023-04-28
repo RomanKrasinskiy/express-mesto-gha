@@ -166,10 +166,10 @@ const login = (req, res) => {
 };
 
 const getCurrentUserInfo = (req, res, next) => {
-  User.findById(req.user._id)
+  User.findById(req.user._id._id)
     .then((user) => {
       if (!user) {
-        res
+        throw res
           .status(NOT_FOUND)
           .send({ message: `Пользователь с id: ${req.user._id} не найден` });
       }
