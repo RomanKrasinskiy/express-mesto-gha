@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-const { regAvatarURL } = require('../utils/regulars');
+// const { regAvatarURL } = require('../utils/regulars');
 const {
   getUsers,
   getUser,
@@ -27,7 +27,7 @@ router.patch('/me', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(regAvatarURL),
+    avatar: Joi.string().pattern(/https?:\/\/w{0,3}?[a-z0-9-]{1,}\..+#?/i),
   }),
 }), updateAvatar);
 
