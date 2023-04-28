@@ -6,8 +6,8 @@ const regAvatarURL = require('./utils/regulars');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
-const auth = require('./middlewares/auth');
-const centralizedErrorHandling = require('./middlewares/centralizedErrorHandling');
+const { auth } = require('./middlewares/auth');
+const { centralizedErrorHandling } = require('./middlewares/centralizedErrorHandling');
 
 const { NOT_FOUND } = require('./answersServer/errors');
 
