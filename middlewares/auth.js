@@ -2,22 +2,19 @@ const jwt = require('jsonwebtoken');
 const { UNAUTHORIZED } = require('../answersServer/errors');
 
 const auth = (req, res, next) => {
-  const { authorization } = req.headers;
+  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    res
+  if (!token) {
+    return res
       .status(UNAUTHORIZED)
       .send({ message: 'Необходима авторизация' });
   }
-  // извлечём токен
-  const token = authorization.replace('Bearer ', '');
-
-  let payload;
+  // let payload;
   try {
-    payload = jwt.verify(token, 'secret-key');
-    req.user = payload;
+    const verify = jwt.verify(token, 'secret-key');
+    req.user = verify.payload;
   } catch (err) {
-    res
+    return res
       .status(UNAUTHORIZED)
       .send({ message: 'Ошибка авторизации' });
   }
