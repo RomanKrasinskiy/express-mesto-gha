@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validate = require('mongoose-validator');
-const regAvatarURL = require('../utils/regulars');
+const { regAvatarURL } = require('../utils/regulars');
 
 const emailValidator = validate({ validator: 'isEmail' });
 
