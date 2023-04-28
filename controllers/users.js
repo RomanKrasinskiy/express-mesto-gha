@@ -166,6 +166,13 @@ module.exports.login = (req, res) => {
 module.exports.getCurrentUserInfo = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)
-    .then((user) => res.status(OK).send(user))
-    .catch((err) => next(err));
+    .then((user) => {
+      if (!user) {
+        res
+          .status(NOT_FOUND)
+          .send({ message: 'Пользователь с указанным _id не найден.' });
+      }
+      res.status(OK).send(user);
+    })
+    .catch(next);
 };
