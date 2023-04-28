@@ -133,12 +133,13 @@ module.exports.updateAvatar = (req, res) => {
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
-
+  let userId;
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error('Неправильная почта или пароль'));
       }
+      userId = user._id;
       return bcrypt.compare(password, user.password);
     })
     .then((matched) => {
@@ -147,7 +148,7 @@ module.exports.login = (req, res) => {
         return Promise.reject(new Error('Неправильные почта или пароль'));
       }
       const token = jwt.sign(
-        { _id: matched._id },
+        { _id: userId },
         'secret-key',
         { expiresIn: 3600 * 24 * 7 },
       );
@@ -163,6 +164,7 @@ module.exports.login = (req, res) => {
       res.status(UNAUTHORIZED).send({ message: 'Ошибка авторизации' });
     });
 };
+
 module.exports.getCurrentUserInfo = (req, res, next) => {
   const userId = req.user._id;
   User.findById(userId)
