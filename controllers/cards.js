@@ -9,22 +9,23 @@ const {
   INTERNAL_SERVER,
 } = require('../answersServer/errors');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .populate(['owner', 'likes'])
     .then((card) => res.status(OK).send(card))
-    .catch(() => res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' }));
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки.' });
+        next(res.status(BAD_REQUEST).send({ message: { name, link }, err }));
+        return;
       }
-      return res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' });
+      next(err);
     });
 };
 

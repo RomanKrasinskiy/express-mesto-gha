@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-// const regAvatarURL = require('../utils/regulars');
 const {
   getCards,
   createCard,

@@ -6,7 +6,7 @@ const User = require('../models/user');
 const { OK, CREATED } = require('../answersServer/success');
 const {
   BAD_REQUEST,
-  // UNAUTHORIZED,
+  UNAUTHORIZED,
   NOT_FOUND,
   CONFLICT,
   INTERNAL_SERVER,
@@ -138,7 +138,9 @@ const login = (req, res, next) => {
 
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильная почта или пароль'));
+        return Promise.reject(res
+          .status(UNAUTHORIZED)
+          .send({ message: 'Неправильные почта или пароль' }));
       }
       userId = user._id;
       return bcrypt.compare(password, user.password);
@@ -146,7 +148,9 @@ const login = (req, res, next) => {
     .then((matched) => {
       if (!matched) {
         // хеши не совпали — отклоняем промис
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return Promise.reject(res
+          .status(UNAUTHORIZED)
+          .send({ message: 'Неправильные почта или пароль' }));
       }
       const token = jwt.sign(
         { _id: userId },
