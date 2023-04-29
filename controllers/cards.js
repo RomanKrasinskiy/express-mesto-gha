@@ -2,12 +2,9 @@ const mongoose = require('mongoose');
 const Card = require('../models/card');
 
 const { OK, CREATED } = require('../answersServer/success');
-const {
-  BAD_REQUEST,
-  FORBIDDEN,
-  NOT_FOUND,
-  INTERNAL_SERVER,
-} = require('../answersServer/errors');
+const BadRequestError = require('../answersServer/customsErrors/BadRequestError');
+const NotFoundError = require('../answersServer/customsErrors/NotFoundError');
+const ForbiddenError = require('../answersServer/customsErrors/ForbiddenError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -22,33 +19,35 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(res.status(BAD_REQUEST).send({ message: { name, link }, err }));
+        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
         return;
       }
       next(err);
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND).send({ message: 'Карточка с таким таким id не найдена.' });
+        throw new NotFoundError('Карточка с таким таким id не найдена.');
       }
-      if (card.owner.toString() !== req.user._id) {
-        return res.status(FORBIDDEN).send({ message: 'Вы не можете удалять чужие карточки.' });
+      if (card.owner.toHexString() !== req.user._id) {
+        throw new ForbiddenError('Вы не можете удалять чужие карточки.');
       }
-      return res.status(OK).send(card);
+      return card.deleteOne();
     })
+    .then(() => res.send({ message: 'Карточка удалена' }))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные.' });
+        next(new BadRequestError('Переданы некорректные данные.'));
+        return;
       }
-      return res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' });
+      next(err);
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -59,16 +58,18 @@ module.exports.likeCard = (req, res) => {
     .then((card) => res.status(OK).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки лайка.' });
+        next(new BadRequestError('Переданы некорректные данные для постановки лайка.'));
+        return;
       }
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        return res.status(NOT_FOUND).send({ message: 'Карточка с данным id не найдена.' });
+        next(new NotFoundError('Карточка с данным id не найдена.'));
+        return;
       }
-      return res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' });
+      next(err);
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -79,11 +80,13 @@ module.exports.dislikeCard = (req, res) => {
     .then((card) => res.status(OK).send(card))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для снятия лайка.' });
+        next(new BadRequestError('Переданы некорректные данные для снятия лайка.'));
+        return;
       }
       if (err instanceof (mongoose.Error.DocumentNotFoundError)) {
-        return res.status(NOT_FOUND).send({ message: 'Карточка с данным id не найдена.' });
+        next(new NotFoundError('Карточка с данным id не найдена.'));
+        return;
       }
-      return res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' });
+      next(err);
     });
 };

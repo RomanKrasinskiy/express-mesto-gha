@@ -14,34 +14,21 @@ router.get('/me', getCurrentUserInfo);
 
 router.get('/:userId', celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().length(24).hex().required(),
+    userId: Joi.string().required().length(24).hex(),
   }),
 }), getUser);
 
 router.patch('/me', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).required(),
-    about: Joi.string().min(2).max(30).required(),
+    name: Joi.string().min(2).max(30).message('Поле "name" должно быть валидным'),
+    about: Joi.string().min(2).max(30).message('Поле "about" должно быть валидным'),
   }),
 }), updateUser);
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(/https?:\/\/w{0,3}?[a-z0-9-]{1,}\..+#?/i).required(),
+    avatar: Joi.string().required().pattern(/https?:\/\/w{0,3}?[a-z0-9-]{1,}\..+#?/i).message('Поле "avatar" должно быть валидным url-адресом'),
   }),
 }), updateAvatar);
-
-const validateFields = (req, res, next) => {
-  const allowedFields = ['name', 'about', 'avatar'];
-  const fields = Object.keys(req.body);
-  const invalidFields = fields.filter((field) => !allowedFields.includes(field));
-  if (invalidFields.length !== 0) {
-    res.status(400).send({ message: 'Запрос содержит недопустимые поля' });
-  } else {
-    next();
-  }
-};
-router.patch('/me', validateFields);
-router.patch('/me/avatar', validateFields);
 
 module.exports = router;
