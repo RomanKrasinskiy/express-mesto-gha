@@ -3,7 +3,7 @@ const { UNAUTHORIZED } = require('../answersServer/errors');
 
 // eslint-disable-next-line consistent-return
 const auth = (req, res, next) => {
-  const token = req.headers.authorization || req.cookies.jwt;
+  const token = req.headers.authorization;
 
   if (!token) {
     return res
@@ -21,4 +21,4 @@ const auth = (req, res, next) => {
   req.user = verify;
   next();
 };
-module.exports = { auth };
+module.exports = auth;

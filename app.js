@@ -6,7 +6,7 @@ const { errors, celebrate, Joi } = require('celebrate');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
-const { auth } = require('./middlewares/auth');
+const auth = require('./middlewares/auth');
 const { centralizedErrorHandling } = require('./middlewares/centralizedErrorHandling');
 
 const { NOT_FOUND } = require('./answersServer/errors');
@@ -32,8 +32,6 @@ app.post('/signup', celebrate({
     password: Joi.string().required(),
   }),
 }), createUser);
-
-app.use(auth);
 
 app.use('/users', auth, userRouter);
 app.use('/cards', auth, cardRouter);
