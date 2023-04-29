@@ -8,7 +8,7 @@ const auth = (req, res, next) => {
   if (!token) {
     return res
       .status(UNAUTHORIZED)
-      .send({ token });
+      .send({ message: 'Не удалось авторизоваться' });
   }
   let verify;
   try {
