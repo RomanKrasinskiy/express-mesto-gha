@@ -3,21 +3,17 @@ const { UNAUTHORIZED } = require('../answersServer/errors');
 
 // eslint-disable-next-line consistent-return
 const auth = (req, res, next) => {
-  const { authorization } = req.headers;
-
-  if (!authorization || !authorization.startsWith('jwt ')) {
+  let payload;
+  const token = req.cookies.jwt;
+  if (!token) {
     return res
       .status(UNAUTHORIZED)
-      .send({ message: 'Не удалось авторизоваться' });
+      .send({ message: token });
   }
-  const token = authorization.replace('Bearer ', '');
-  let payload;
   try {
     payload = jwt.verify(token, 'secret-key');
   } catch (err) {
-    return res
-      .status(UNAUTHORIZED)
-      .send({ message: 'Ошибка авторизации' });
+    next(err);
   }
   req.user = payload;
   next();

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors, celebrate, Joi } = require('celebrate');
 // const regAvatarURL = require('./utils/regulars');
+const cookieParser = require('cookie-parser');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
@@ -16,6 +17,7 @@ const app = express();
 mongoose.connect(MONGODB_URL, { useNewUrlParser: true });
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
