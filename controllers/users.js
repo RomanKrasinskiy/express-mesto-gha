@@ -169,13 +169,17 @@ const getCurrentUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw res
-          .status(NOT_FOUND)
-          .send({ message: `Пользователь с id: ${req.user._id} не найден` });
+        throw new Error(`Пользователь с id: ${req.user._id} не найден`);
+        // throw res
+        //   .status(NOT_FOUND)
+        //   .send({ message: `Пользователь с id: ${req.user._id} не найден` });
       }
       res.status(OK).send(user);
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      res.status(NOT_FOUND).send({ message: err.message });
+      next(err);
+    });
 };
 
 module.exports = {
