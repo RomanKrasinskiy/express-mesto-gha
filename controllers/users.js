@@ -166,7 +166,7 @@ const login = (req, res) => {
 };
 
 const getCurrentUserInfo = (req, res, next) => {
-  User.findById(req.user._id._id)
+  User.findById(req.user._id)
     .then((user) => {
       if (!user) {
         throw res
