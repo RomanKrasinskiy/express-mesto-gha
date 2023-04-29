@@ -8,12 +8,12 @@ const auth = (req, res, next) => {
   if (!token) {
     return res
       .status(UNAUTHORIZED)
-      .send({ message: token });
+      .send({ message: 'Необходимо авторизоваться' });
   }
   try {
     payload = jwt.verify(token, 'secret-key');
   } catch (err) {
-    next(err);
+    next(res.status(UNAUTHORIZED).send({ message: 'Необходимо авторизоваться' }));
   }
   req.user = payload;
   next();
