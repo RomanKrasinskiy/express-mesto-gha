@@ -98,7 +98,7 @@ const updateUser = (req, res) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return res
           .status(NOT_FOUND)
-          .send({ message: 'aaaПользователь с указанным _id не найден.' });
+          .send({ message: 'Пользователь с указанным _id не найден.' });
       }
       return res.status(INTERNAL_SERVER).send({ message: 'Ошибка сервера.' });
     });
@@ -175,7 +175,7 @@ const getCurrentUserInfo = (req, res, next) => {
       }
       res.status(OK).send(user);
     })
-    .catch(next);
+    .catch((err) => next(err));
 };
 
 module.exports = {

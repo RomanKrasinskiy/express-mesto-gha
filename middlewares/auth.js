@@ -3,7 +3,7 @@ const { UNAUTHORIZED } = require('../answersServer/errors');
 
 // eslint-disable-next-line consistent-return
 const auth = (req, res, next) => {
-  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+  const token = req.headers.authorization || req.cookies.jwt;
 
   if (!token) {
     return res
