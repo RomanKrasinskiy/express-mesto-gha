@@ -5,7 +5,7 @@ const { UNAUTHORIZED } = require('../answersServer/errors');
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
-  if (!authorization || !authorization.startsWith('Bearer ')) {
+  if (!authorization || !authorization.startsWith('jwt ')) {
     return res
       .status(UNAUTHORIZED)
       .send({ message: 'Не удалось авторизоваться' });
