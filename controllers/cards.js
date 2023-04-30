@@ -27,13 +27,12 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Карточка с таким таким id не найдена.');
-      }
-      if (card.owner.toHexString() !== req.user._id) {
-        throw new ForbiddenError('Вы не можете удалять чужие карточки.');
+      } else if (req.user._id !== card.owner.toHexString()) {
+        throw new ForbiddenError('Вы не можете удалить чужую карточку.');
       }
       return card.deleteOne();
     })
